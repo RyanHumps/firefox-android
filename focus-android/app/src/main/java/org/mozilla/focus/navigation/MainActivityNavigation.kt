@@ -29,7 +29,6 @@ import org.mozilla.focus.fragment.onboarding.OnboardingStorage
 import org.mozilla.focus.locale.screen.LanguageFragment
 import org.mozilla.focus.nimbus.FocusNimbus
 import org.mozilla.focus.nimbus.Onboarding
-import org.mozilla.focus.searchwidget.SearchWidgetUtils
 import org.mozilla.focus.settings.AboutLibrariesFragment
 import org.mozilla.focus.settings.GeneralSettingsFragment
 import org.mozilla.focus.settings.InstalledSearchEnginesSettingsFragment
@@ -132,7 +131,6 @@ class MainActivityNavigation(
                 )
         ) {
             onboardingFeature.recordExposure()
-            SearchWidgetUtils.showPromoteSearchWidgetDialog(activity)
         } else {
             ViewUtils.showBrandedSnackbar(
                 activity.findViewById(android.R.id.content),
