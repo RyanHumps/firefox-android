@@ -106,26 +106,6 @@ class DefaultBrowserMenu(
 
     private val mvpMenuItems by lazy {
 
-        val shortcuts = TwoStateBrowserMenuImageText(
-            primaryLabel = context.getString(R.string.menu_add_to_shortcuts),
-            primaryStateIconResource = R.drawable.mozac_ic_pin_24,
-            secondaryLabel = context.getString(R.string.menu_remove_from_shortcuts),
-            secondaryStateIconResource = R.drawable.mozac_ic_pin_slash_24,
-            isInPrimaryState = {
-                appStore.state.topSites.find { it.url == selectedSession?.content?.url } == null &&
-                    selectedSession?.content?.url != null && appStore.state.topSites.size < TOP_SITES_MAX_LIMIT
-            },
-            isInSecondaryState = {
-                appStore.state.topSites.find { it.url == selectedSession?.content?.url } != null
-            },
-            primaryStateAction = { onItemTapped.invoke(ToolbarMenu.Item.AddToShortcuts) },
-            secondaryStateAction = { onItemTapped.invoke(ToolbarMenu.Item.RemoveFromShortcuts) },
-        )
-
-        val shortcutsDivider = BrowserMenuDivider().apply {
-            visible = shortcuts.visible
-        }
-
         val findInPage = BrowserMenuImageText(
             label = context.getString(R.string.find_in_page),
             imageResource = R.drawable.mozac_ic_search_24,
@@ -178,8 +158,6 @@ class DefaultBrowserMenu(
         listOfNotNull(
             menuToolbar,
             BrowserMenuDivider(),
-            shortcuts,
-            shortcutsDivider,
             findInPage,
             desktopMode,
             reportSiteIssuePlaceholder,

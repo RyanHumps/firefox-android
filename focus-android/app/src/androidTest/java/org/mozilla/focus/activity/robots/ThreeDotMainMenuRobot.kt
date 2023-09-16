@@ -22,7 +22,6 @@ import org.mozilla.focus.helpers.TestHelper.mDevice
 import org.mozilla.focus.helpers.TestHelper.packageName
 import org.mozilla.focus.helpers.TestHelper.progressBar
 import org.mozilla.focus.helpers.TestHelper.waitingTime
-import org.mozilla.focus.helpers.TestHelper.waitingTimeShort
 
 class ThreeDotMainMenuRobot {
 
@@ -77,11 +76,6 @@ class ThreeDotMainMenuRobot {
         if (chromeBrowser.exists()) {
             chromeBrowser.click()
         }
-    }
-
-    fun clickAddToShortcuts() {
-        addShortcutButton.waitForExists(waitingTimeShort)
-        addShortcutButton.click()
     }
 
     class Transition {
@@ -178,12 +172,6 @@ private val shareBtn = mDevice.findObject(
     UiSelector()
         .description("Share…"),
 )
-
-private val addShortcutButton =
-    mDevice.findObject(
-        UiSelector()
-            .text("Add to Shortcuts"),
-    )
 
 private val reloadButton = mDevice.findObject(
     UiSelector()
