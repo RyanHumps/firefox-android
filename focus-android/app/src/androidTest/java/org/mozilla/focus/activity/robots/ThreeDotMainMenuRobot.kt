@@ -27,8 +27,6 @@ class ThreeDotMainMenuRobot {
 
     fun verifyShareButtonExists() = assertTrue(shareBtn.exists())
 
-    fun verifyAddToHomeButtonExists() = assertTrue(addToHomeButton.exists())
-
     fun verifyFindInPageExists() = findInPageButton.check(matches(isDisplayed()))
 
     fun verifyOpenInButtonExists() = assertTrue(openInBtn.exists())
@@ -98,14 +96,6 @@ class ThreeDotMainMenuRobot {
 
             BrowserRobot().interact()
             return BrowserRobot.Transition()
-        }
-
-        fun openAddToHSDialog(interact: AddToHomeScreenRobot.() -> Unit): AddToHomeScreenRobot.Transition {
-            addToHomeButton.waitForExists(waitingTime)
-            addToHomeButton.click()
-
-            AddToHomeScreenRobot().interact()
-            return AddToHomeScreenRobot.Transition()
         }
 
         fun clickHelpPageLink(interact: BrowserRobot.() -> Unit): BrowserRobot.Transition {
@@ -181,11 +171,6 @@ private val reloadButton = mDevice.findObject(
 private val stopLoadingButton = mDevice.findObject(
     UiSelector()
         .description("Stop loading website"),
-)
-
-private val addToHomeButton = mDevice.findObject(
-    UiSelector()
-        .text("Add to Home screen"),
 )
 
 private val findInPageButton = onView(withText("Find in Page"))

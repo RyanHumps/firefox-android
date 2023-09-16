@@ -128,17 +128,6 @@ class DefaultBrowserMenu(
             iconTintColorResource = context.theme.resolveAttribute(R.attr.primaryText),
         )
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        fun canAddToHomescreen(): Boolean =
-            selectedSession != null && isPinningSupported
-
-        val addToHomescreen = BrowserMenuImageText(
-            label = context.getString(R.string.menu_add_to_home_screen),
-            imageResource = R.drawable.mozac_ic_add_to_home_screen_24,
-        ) {
-            onItemTapped.invoke(ToolbarMenu.Item.AddToHomeScreen)
-        }
-
         val openInApp = BrowserMenuImageText(
             label = context.getString(R.string.menu_open_with_a_browser2),
             imageResource = R.drawable.mozac_ic_open_in,
@@ -162,7 +151,6 @@ class DefaultBrowserMenu(
             desktopMode,
             reportSiteIssuePlaceholder,
             BrowserMenuDivider(),
-            addToHomescreen.apply { visible = ::canAddToHomescreen },
             openInApp,
             BrowserMenuDivider(),
             settings,

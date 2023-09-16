@@ -68,7 +68,6 @@ class ThreeDotMainMenuTest {
             verifyPageContent("Tab 1")
         }.openMainMenu {
             verifyShareButtonExists()
-            verifyAddToHomeButtonExists()
             verifyFindInPageExists()
             verifyOpenInButtonExists()
             verifyRequestDesktopSiteExists()

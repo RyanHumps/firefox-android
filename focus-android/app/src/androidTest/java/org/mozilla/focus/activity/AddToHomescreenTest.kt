@@ -8,17 +8,11 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
-import org.mozilla.focus.activity.robots.searchScreen
 import org.mozilla.focus.helpers.FeatureSettingsHelper
 import org.mozilla.focus.helpers.MainActivityFirstrunTestRule
 import org.mozilla.focus.helpers.MockWebServerHelper
 import org.mozilla.focus.helpers.RetryTestRule
-import org.mozilla.focus.helpers.TestAssetHelper.getGenericTabAsset
-import org.mozilla.focus.helpers.TestHelper.randomString
-import org.mozilla.focus.helpers.TestHelper.waitingTime
-import org.mozilla.focus.testAnnotations.SmokeTest
 
 /**
  * Tests to verify the functionality of Add to homescreen from the main menu
@@ -48,42 +42,5 @@ class AddToHomescreenTest {
     fun tearDown() {
         webServer.shutdown()
         featureSettingsHelper.resetAllFeatureFlags()
-    }
-
-    @SmokeTest
-    @Test
-    fun addPageToHomeScreenTest() {
-        val pageUrl = getGenericTabAsset(webServer, 1).url
-        val pageTitle = randomString(5)
-
-        searchScreen {
-        }.loadPage(pageUrl) {
-            progressBar.waitUntilGone(waitingTime)
-        }.openMainMenu {
-        }.openAddToHSDialog {
-            addShortcutWithTitle(pageTitle)
-            handleAddAutomaticallyDialog()
-        }.searchAndOpenHomeScreenShortcut(pageTitle) {
-            verifyPageURL(pageUrl)
-        }
-    }
-
-    @SmokeTest
-    @Test
-    fun noNameShortcutTest() {
-        val pageUrl = getGenericTabAsset(webServer, 1).url
-
-        searchScreen {
-        }.loadPage(pageUrl) {
-        }.openMainMenu {
-        }.openAddToHSDialog {
-            // leave shortcut title empty and add it to HS
-            addShortcutNoTitle()
-            handleAddAutomaticallyDialog()
-        }.searchAndOpenHomeScreenShortcut(webServer.hostName) {
-            // only checking a part of the URL that is constant,
-            // in case it opens a different shortcut on a retry
-            verifyPageURL("tab1.html")
-        }
     }
 }
