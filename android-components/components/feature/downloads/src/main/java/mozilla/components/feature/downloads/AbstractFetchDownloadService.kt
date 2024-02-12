@@ -703,6 +703,7 @@ abstract class AbstractFetchDownloadService : Service() {
             download.url.sanitizeURL(),
             headers = headers,
             private = download.private,
+            referrerUrl = download.referrerUrl,
         )
         // When resuming a download we need to use the httpClient as
         // download.response doesn't support adding headers.
@@ -839,8 +840,9 @@ abstract class AbstractFetchDownloadService : Service() {
         val intent = Intent(ACTION_DOWNLOAD_COMPLETE)
         intent.putExtra(EXTRA_DOWNLOAD_STATUS, getDownloadJobStatus(downloadState))
         intent.putExtra(EXTRA_DOWNLOAD_ID, downloadState.state.id)
+        intent.setPackage(context.packageName)
 
-        context.sendBroadcast(intent)
+        context.sendBroadcast(intent, "${context.packageName}.permission.RECEIVE_DOWNLOAD_BROADCAST")
     }
 
     /**

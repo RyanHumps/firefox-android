@@ -22,12 +22,10 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.never
-import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.robolectric.Shadows.shadowOf
@@ -48,6 +46,7 @@ class AppLinksUseCasesTest {
     private val aboutUrl = "about:config"
     private val javascriptUrl = "javascript:'hello, world'"
     private val jarUrl = "jar:file://some/path/test.html"
+    private val contentUrl = "content://media/external_primary/downloads/12345"
     private val fileType = "audio/mpeg"
     private val layerUrl = "https://example.com"
     private val layerPackage = "com.example.app"
@@ -204,6 +203,15 @@ class AppLinksUseCasesTest {
         val subject = AppLinksUseCases(context, { true })
 
         val redirect = subject.interceptedAppLinkRedirect(jarUrl)
+        assertFalse(redirect.isRedirect())
+    }
+
+    @Test
+    fun `A content url is not an app link`() {
+        val context = createContext(Triple(contentUrl, appPackage, ""))
+        val subject = AppLinksUseCases(context, { true })
+
+        val redirect = subject.interceptedAppLinkRedirect(contentUrl)
         assertFalse(redirect.isRedirect())
     }
 
@@ -424,9 +432,8 @@ class AppLinksUseCasesTest {
     }
 
     @Test
-    @Ignore("Requires updated Robolectric and Mockito with Java 11: https://github.com/mozilla-mobile/android-components/issues/10550")
     fun `OpenAppLinkRedirect should not try to open files`() {
-        val context = spy(createContext())
+        val context = createContext()
         val uri = Uri.fromFile(File(filePath))
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri, fileType)
@@ -438,9 +445,8 @@ class AppLinksUseCasesTest {
     }
 
     @Test
-    @Ignore("Requires updated Robolectric and Mockito with Java 11: https://github.com/mozilla-mobile/android-components/issues/10550")
     fun `OpenAppLinkRedirect should not try to open data URIs`() {
-        val context = spy(createContext())
+        val context = createContext()
         val uri = Uri.parse(dataUrl)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri, fileType)
@@ -452,9 +458,8 @@ class AppLinksUseCasesTest {
     }
 
     @Test
-    @Ignore("Requires updated Robolectric and Mockito with Java 11: https://github.com/mozilla-mobile/android-components/issues/10550")
     fun `OpenAppLinkRedirect should not try to open javascript URIs`() {
-        val context = spy(createContext())
+        val context = createContext()
         val uri = Uri.parse(javascriptUrl)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri, fileType)
@@ -466,9 +471,8 @@ class AppLinksUseCasesTest {
     }
 
     @Test
-    @Ignore("Requires updated Robolectric and Mockito with Java 11: https://github.com/mozilla-mobile/android-components/issues/10550")
     fun `OpenAppLinkRedirect should not try to open about URIs`() {
-        val context = spy(createContext())
+        val context = createContext()
         val uri = Uri.parse(aboutUrl)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri, fileType)
@@ -480,9 +484,8 @@ class AppLinksUseCasesTest {
     }
 
     @Test
-    @Ignore("Requires updated Robolectric and Mockito with Java 11: https://github.com/mozilla-mobile/android-components/issues/10550")
     fun `OpenAppLinkRedirect should not try to open jar URIs`() {
-        val context = spy(createContext())
+        val context = createContext()
         val uri = Uri.parse(jarUrl)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri, fileType)
@@ -592,6 +595,27 @@ class AppLinksUseCasesTest {
         assertFalse(redirect.hasFallback())
         assertNull(redirect.marketplaceIntent)
         assertNull(redirect.fallbackUrl)
+    }
+
+    @Test
+    fun `WHEN opening a app scheme uri without a host WITH package installed THEN try to redirect`() {
+        val context = createContext(urlToPackages = arrayOf(Triple("my.scheme", appPackage, "")), default = true, installedApps = listOf(appPackage))
+
+        var subject = AppLinksUseCases(context, { false })
+        var redirect = subject.interceptedAppLinkRedirect("my.scheme")
+        assertTrue(redirect.hasExternalApp())
+        assertFalse(redirect.hasFallback())
+        assertNull(redirect.marketplaceIntent)
+        assertNull(redirect.fallbackUrl)
+        assertTrue(redirect.appIntent?.flags?.and(Intent.FLAG_ACTIVITY_CLEAR_TASK) == 0)
+
+        subject = AppLinksUseCases(context, { true })
+        redirect = subject.interceptedAppLinkRedirect("my.scheme")
+        assertTrue(redirect.hasExternalApp())
+        assertFalse(redirect.hasFallback())
+        assertNull(redirect.marketplaceIntent)
+        assertNull(redirect.fallbackUrl)
+        assertTrue(redirect.appIntent?.flags?.and(Intent.FLAG_ACTIVITY_CLEAR_TASK) == 0)
     }
 
     @Test
